@@ -1,9 +1,27 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Chat from './components/Chat'
 import './App.css'
+
+interface Message {
+  role: string
+  content: string
+  id: string
+  createdAt: string
+}
 
 function App() {
   const [userMessage, setUserMessage] = useState('')
-  const [response, setResponse] = useState('')
+  const [messages, setMessages] = useState<Message[]>([])
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const res = await fetch('http://localhost:3000/api/messages')
+      const data = await res.json()
+      setMessages(data)
+    }
+
+    fetchMessages()
+  }, [])
 
   const handleSubmit = async () => {
     const res = await fetch('http://localhost:3000/api/ask', {
@@ -14,8 +32,22 @@ function App() {
       body: JSON.stringify({ userMessage }),
     })
     const data = await res.json()
-    setResponse(JSON.stringify(data, null, 2))
+    const newMessage: Message = {
+      role: 'user',
+      content: userMessage,
+      id: data.id, // Use the correct structure from the response
+      createdAt: new Date().toISOString()
+    }
+    const assistantMessage: Message = {
+      role: 'assistant',
+      content: data.content, // Use the correct structure from the response
+      id: data.id, // Use the correct structure from the response
+      createdAt: new Date().toISOString()
+    }
+    setMessages([...messages, newMessage, assistantMessage])
+    setUserMessage('')
   }
+
   return (
     <>
       <h1>Agent Zero</h1>
@@ -26,7 +58,7 @@ function App() {
         onChange={(e) => setUserMessage(e.target.value)}
       />
       <button onClick={handleSubmit}>Ask</button>
-      <pre>{response}</pre>
+      <Chat messages={messages} />
     </>
   )
 }
