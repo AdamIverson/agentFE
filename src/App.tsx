@@ -51,13 +51,15 @@ function App() {
   return (
     <>
       <h1>Agent Zero</h1>
-      <input
-        type="text"
-        placeholder="ask ur little question"
-        value={userMessage}
-        onChange={(e) => setUserMessage(e.target.value)}
-      />
-      <button onClick={handleSubmit}>Ask</button>
+      <div>
+        <input
+          type="text"
+          placeholder="ask ur little question"
+          value={userMessage}
+          onChange={(e) => setUserMessage(e.target.value)}
+        />
+        <button onClick={handleSubmit} style={{ fontSize: "24px", padding: "5px 10px", margin: "10px" }}>Ask</button>
+      </div>
       <Chat messages={messages} />
     </>
   )
